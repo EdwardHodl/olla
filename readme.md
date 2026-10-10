@@ -340,3 +340,18 @@ Licensed under the Apache License 2.0. See [LICENSE](LICENSE) for details.
 **Made with ❤️ for the LLM community**
 
 </div>
+
+## Fork notice (appletree)
+
+This repository is a production fork of [thushan/olla](https://github.com/thushan/olla)
+carrying local patches for a homogeneous GPU inference fleet:
+
+| Patch | Summary | Branch history |
+|---|---|---|
+| #1 | Route hardening: root-level OpenAI-compatible endpoints | `8136903` |
+| #2 | Sticky-session observability (`sticky_key_source` logging, `X-Olla-Endpoint` echo, `/internal/stats/sticky`) | `01640c6`, `8136903` |
+| #3 | Runtime drain/undrain API (`/internal/endpoints/{name}/drain|undrain`) — zero-downtime staggered maintenance; see [docs](docs/content/concepts/endpoint-draining.md) | `08b0e64` |
+| #4 | Load-aware sticky pin placement + `olla_sticky_pins{endpoint}` gauge — new conversations seed the least-loaded endpoint | `00c3cfd`, `cb1601f` |
+
+All work lives on `appletree/fleet-patches`; see the upstream README below for
+everything else.
