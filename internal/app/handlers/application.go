@@ -111,6 +111,7 @@ type Application struct {
 	// stickyStatsFn is non-nil when sticky sessions are enabled. Stored as a
 	// closure so the handler layer does not need to import the balancer package.
 	stickyStatsFn func() *balancer.StickyStats
+	stickyPinsFn       func() map[string]int64
 	aliasResolver *registry.AliasResolver
 	server        *http.Server
 	errCh         chan error
@@ -253,6 +254,12 @@ func (a *Application) GetProfileLookup() translator.ProfileLookup {
 // Called by HTTPService when sticky sessions are enabled.
 func (a *Application) SetStickyStatsFn(fn func() *balancer.StickyStats) {
 	a.stickyStatsFn = fn
+}
+	// stickyPinsFn (patch #4) is set via SetStickyPinsFn after construction.
+
+// SetStickyPinsFn wires the pin-count provider after construction.
+func (a *Application) SetStickyPinsFn(fn func() map[string]int64) {
+	a.stickyPinsFn = fn
 }
 
 // SetSecurityAdapters wires the real security.Adapters into the handlers-layer

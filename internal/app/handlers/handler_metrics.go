@@ -40,6 +40,16 @@ func (a *Application) metricsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(constants.HeaderContentType, constants.ContentTypePrometheus)
 	w.WriteHeader(http.StatusOK)
 	writePrometheusMetrics(w, response, snapshot, a.Config.Proxy, time.Since(a.StartTime), summary, modelStats, modelEndpointStats)
+	// Appletree patch #4: per-endpoint sticky pin attribution.
+	if a.stickyPinsFn != nil {
+		var pb strings.Builder
+		for name, n := range a.stickyPinsFn() {
+			writePrometheusHelpType(&pb, "olla_sticky_pins", "gauge", "Sticky sessions pinned per endpoint")
+			writePrometheusLabeledGauge(&pb, "olla_sticky_pins", float64(n), "endpoint", name)
+		}
+		_, _ = pb.WriteString("\n")
+		_, _ = w.Write([]byte(pb.String()))
+	}
 }
 
 func writePrometheusMetrics(w http.ResponseWriter, response StatusResponse, snapshot *statusSnapshot, proxyConfig config.ProxyConfig, uptime time.Duration,

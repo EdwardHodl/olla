@@ -236,7 +236,15 @@ func (s *ProxyServiceWrapper) StickyStats() *balancer.StickyStats {
 	return &stats
 }
 
-// PurgeDeadEndpoints removes sticky session entries that point to backends absent
+// StickyPinCounts returns per-endpoint pin attribution, or nil when unavailable.
+func (s *ProxyServiceWrapper) StickyPinCounts() map[string]int64 {
+	if s.stickyWrapper == nil {
+		return nil
+	}
+	return s.stickyWrapper.PinCounts()
+}
+
+// PurgeDeadEndpoints removes sticky session entries that point to backends absent// PurgeDeadEndpoints removes sticky session entries that point to backends absent
 // from the routable set. It is a no-op when sticky sessions are disabled.
 func (s *ProxyServiceWrapper) PurgeDeadEndpoints(routable []*domain.Endpoint) {
 	if s.stickyWrapper != nil {
